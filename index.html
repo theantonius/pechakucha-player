@@ -112,17 +112,16 @@ details input { width: 110px; padding: 8px 10px; }
   <header>
     <!-- <h1>Pecha<span>Kucha</span> Player</h1>
     <div class="tag" id="format">20 slides × 20 sec · 6:40</div> -->
-    <button type="button" id="restart" disabled>Restart show</button>
-    <button type="button" id="fs" disabled>Fullscreen</button>
-    <button type="button" id="play" disabled>Start</button>
     <form id="form">
       <div class="field">
         <!-- <label for="url" class="tag" style="display:block;margin-bottom:6px">Google Slides share link</label> -->
         <input id="url" type="url" required placeholder="https://docs.google.com/presentation/d/…/edit?usp=sharing" autocomplete="off" aria-label="Google Slides share link">
       </div>
-      <button class="primary" type="submit">Load deck</button>
+      <button class="primary" type="submit" id="loadBtn">Load deck</button>
     </form>
-    <!-- <button type="button" id="share" disabled>Copy share link</button> -->
+    <button type="button" id="play" disabled>Start</button>
+    <button type="button" id="restart" disabled>Restart</button>
+    <button type="button" id="fs" disabled>Fullscreen</button>
   </header>
   <p class="msg" id="msg"></p>
 
@@ -229,6 +228,11 @@ details input { width: 110px; padding: 8px 10px; }
   function setPlayUI() {
     playBtn.disabled = !deckBase;
     playBtn.textContent = playing ? "Stop" : "Start";
+    // Highlight the next step: Load deck → Start → Restart + Fullscreen while running
+    $("loadBtn").classList.toggle("primary", !deckBase);
+    playBtn.classList.toggle("primary", !!deckBase && !playing);
+    $("restart").classList.toggle("primary", playing);
+    $("fs").classList.toggle("primary", playing);
   }
 
   function play() {
