@@ -4,7 +4,7 @@ A simple Google Slides player for timed presentations. The default is **20 slide
 
 **[Open the player](https://theantonius.github.io/pechakucha-player/)**
 
-![Deck loaded and ready to start](screenshots/loaded.png)
+![Paste your link, then load.](screenshots/empty.png)
 
 ![Show running: slide 2 of 20 with 9 seconds left](screenshots/playing.png)
 
