@@ -130,7 +130,7 @@ details input { width: 90px; padding: 6px 8px; }
   <header>
     <form id="form">
       <div class="field">
-        <div class="fieldhead"><label for="url">Google Slides URL</label><span class="msg" id="msg" role="status"></span></div>
+        <!-- <div class="fieldhead"><label for="url"></label><span class="msg" id="msg" role="status"></span></div> -->
         <input id="url" type="url" required placeholder="https://docs.google.com/presentation/d/…/edit?usp=sharing" autocomplete="off">
       </div>
       <button class="primary" type="submit" id="loadBtn">Load</button>
@@ -159,8 +159,9 @@ details input { width: 90px; padding: 6px 8px; }
 
   <div class="timeline" id="timeline"></div>
 
-  <p class="hint">Sharing: <b>Anyone with the link: Viewer</b><br>
-  The timer starts with Start. If it drifts from Google Slides, use Restart to resync.</p>
+  <p class="hint">Deck sharing must be set to: <b>Anyone with the link: Viewer</b><br>
+  <!-- The timer starts with Start. If it drifts from Google Slides, use Restart to resync.</p> -->
+  </p>
 </div>
 
 <script>
@@ -296,7 +297,13 @@ details input { width: 90px; padding: 6px 8px; }
     setFrame(srcFor(0, false));
   }
 
-  function say(text, cls) { const m = $("msg"); if (m) { m.textContent = text; m.className = cls; } else if (text) alert(text); }
+  // Status text goes in #msg if present; otherwise errors show as the field's built-in tooltip (no pop-up).
+  function say(text, cls) {
+    const m = $("msg"), url = $("url");
+    if (m) { m.textContent = text; m.className = cls; return; }
+    url.setCustomValidity(cls.includes("err") ? text : "");
+    if (cls.includes("err")) url.reportValidity();
+  }
 
   function load(raw) {
     const base = toBase(raw);
@@ -321,6 +328,7 @@ details input { width: 90px; padding: 6px 8px; }
     } catch {}
   }
 
+  $("url").addEventListener("input", () => $("url").setCustomValidity(""));
   $("form").addEventListener("submit", e => { e.preventDefault(); load($("url").value); });
   $("restart").addEventListener("click", restart);
   playBtn.addEventListener("click", () => playing ? pause() : play());
