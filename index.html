@@ -101,24 +101,6 @@ details input { width: 110px; padding: 8px 10px; }
 .hint { font-size: 13px; color: var(--muted); max-width: 70ch; margin: 0; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
-/* Big play / pause button over the stage */
-.play {
-  position: absolute; inset: 0; z-index: 2; display: grid; place-items: center;
-  padding: 0; border: 0; border-radius: 0; background: transparent; cursor: pointer;
-}
-.play[hidden] { display: none; }
-.play.paused { background: rgba(0,0,0,0.35); }
-.play:focus-visible { outline-offset: -4px; }
-.play .disc {
-  width: clamp(72px, 14vw, 128px); aspect-ratio: 1; border-radius: 50%;
-  display: grid; place-items: center; background: var(--accent); color: #fff;
-  box-shadow: 0 6px 24px rgba(0,0,0,0.35); transition: opacity .2s, transform .15s;
-}
-.play .disc svg { width: 44%; height: 44%; }
-.play:hover .disc { transform: scale(1.05); }
-.play.playing .disc { opacity: 0; }
-.play.playing:hover .disc, .play.playing:focus-visible .disc { opacity: 0.85; }
-.play.paused .i-pause, .play.playing .i-play { display: none; }
 .hud { z-index: 3; }
 .empty[hidden] { display: none; }
 .check input { width: auto; }
@@ -131,6 +113,7 @@ details input { width: 110px; padding: 8px 10px; }
     <div class="tag" id="format">20 slides × 20 sec · 6:40</div> -->
     <button type="button" id="restart" disabled>Restart show</button>
     <button type="button" id="fs" disabled>Fullscreen</button>
+    <button type="button" id="play" disabled>Start</button>
     <form id="form">
       <div class="field">
         <!-- <label for="url" class="tag" style="display:block;margin-bottom:6px">Google Slides share link</label> -->
@@ -148,12 +131,6 @@ details input { width: 110px; padding: 8px 10px; }
       <!-- <b>20<i>×</i>20</b> -->
       <!-- <span>Paste a link above. The show starts as soon as the deck loads.</span> -->
     </div>
-    <button type="button" class="play paused" id="play" aria-label="Play" hidden>
-      <span class="disc">
-        <svg class="i-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor"/></svg>
-        <svg class="i-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="currentColor"/></svg>
-      </span>
-    </button>
     <div class="hud" id="hudBox" hidden><span id="slideNo">1 / 20</span><span class="sec" id="secLeft">20</span></div>
   </div>
 
@@ -167,7 +144,7 @@ details input { width: 110px; padding: 8px 10px; }
       <label class="check" for="hud"><input id="hud" type="checkbox" checked> Show countdown overlay</label>
     </div>
   </details>
-  <p class="hint">Deck sharing must be set to “Anyone with the link: Viewer”. Timer runs alongside the deck and starts when you press play. It can drift a second or two from Google's slide change. Use Restart to resync both.</p>
+  <p class="hint">Deck sharing must be set to “Anyone with the link: Viewer”. Timer runs alongside the deck and starts when you press Start. It can drift a second or two from Google's slide change. Use Restart to resync both.</p>
 </div>
 
 <script>
@@ -249,10 +226,8 @@ details input { width: 110px; padding: 8px 10px; }
   }
 
   function setPlayUI() {
-    playBtn.hidden = !deckBase;
-    playBtn.classList.toggle("playing", playing);
-    playBtn.classList.toggle("paused", !playing);
-    playBtn.setAttribute("aria-label", playing ? "Pause" : "Play");
+    playBtn.disabled = !deckBase;
+    playBtn.textContent = playing ? "Stop" : "Start";
   }
 
   function play() {
@@ -311,7 +286,7 @@ details input { width: 110px; padding: 8px 10px; }
     restart();
     empty.hidden = true;
     hudBox.hidden = !$("hud").checked;
-    ["restart", "fs", "share"].forEach(id => { if ($(id)) $(id).disabled = false; });
+    ["restart", "fs", "play", "share"].forEach(id => { if ($(id)) $(id).disabled = false; });
     $("msg").textContent = "Loaded. Blank or asking to sign in? Set sharing to “Anyone with the link: Viewer”.";
     $("msg").className = "msg";
     try {
