@@ -173,7 +173,7 @@ details input { width: 110px; padding: 8px 10px; }
   }
   // autoplay=true lets Google advance the slides; false holds on the given slide.
   function srcFor(slide, autoplay) {
-    return `${deckBase}?start=${autoplay}&loop=false&delayms=${cfg().delay * 1000}#slide=${slide + 1}`;
+    return `${deckBase}?start=${autoplay}&loop=false&rm=minimal&delayms=${cfg().delay * 1000}#slide=${slide + 1}`;
   }
 
   function buildTimeline(n) {
