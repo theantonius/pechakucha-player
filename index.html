@@ -232,7 +232,7 @@ details input { width: 110px; padding: 8px 10px; }
     $("loadBtn").classList.toggle("primary", !deckBase);
     playBtn.classList.toggle("primary", !!deckBase && !playing);
     $("restart").classList.toggle("primary", playing);
-    $("fs").classList.toggle("primary", playing);
+    $("fs").classList.toggle("primary", !!deckBase);
   }
 
   function play() {
@@ -316,7 +316,12 @@ details input { width: 110px; padding: 8px 10px; }
   $("fs").addEventListener("click", () => {
     const req = stage.requestFullscreen || stage.webkitRequestFullscreen;
     if (req) Promise.resolve(req.call(stage)).catch(() => {});
+    play(); // fullscreen starts the show
   });
+  // Leaving fullscreen pauses the show
+  const onFsChange = () => { if (!(document.fullscreenElement || document.webkitFullscreenElement)) pause(); };
+  document.addEventListener("fullscreenchange", onFsChange);
+  document.addEventListener("webkitfullscreenchange", onFsChange);
   $("share")?.addEventListener("click", async () => {
     const link = location.href, btn = $("share");
     try { await navigator.clipboard.writeText(link); btn.textContent = "Link copied"; }
