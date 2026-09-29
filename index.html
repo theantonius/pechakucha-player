@@ -144,7 +144,7 @@ details input { width: 110px; padding: 8px 10px; }
       <label class="check" for="hud"><input id="hud" type="checkbox" checked> Show countdown overlay</label>
     </div>
   </details>
-  <p class="hint">Deck sharing must be set to “Anyone with the link: Viewer”. Timer runs alongside the deck and starts when you press Start. It can drift a second or two from Google's slide change. Use Restart to resync both.</p>
+  <p class="hint">Deck sharing must be set to “Anyone with the link: Viewer”. Timer runs alongside the deck and starts when you press Start. It can drift a second or two from Google's slide change. Use Restart to resync both. Blank or asking to sign in? Set sharing to “Anyone with the link: Viewer”.</p>
 </div>
 
 <script>
@@ -287,7 +287,7 @@ details input { width: 110px; padding: 8px 10px; }
     empty.hidden = true;
     hudBox.hidden = !$("hud").checked;
     ["restart", "fs", "play", "share"].forEach(id => { if ($(id)) $(id).disabled = false; });
-    $("msg").textContent = "Loaded. Blank or asking to sign in? Set sharing to “Anyone with the link: Viewer”.";
+    $("msg").textContent = "";
     $("msg").className = "msg";
     try {
       const { delay, count } = cfg();
