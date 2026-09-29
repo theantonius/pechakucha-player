@@ -41,9 +41,9 @@ html, body { margin: 0; }
 body {
   background: var(--bg); color: var(--fg);
   font: 15px/1.5 var(--body);
-  padding-inline: 16px; padding-block: 24px 48px;
+  padding-inline: 16px; padding-block: 12px 32px;
 }
-.wrap { max-width: 1100px; margin: 0 auto; display: grid; gap: 20px; }
+.wrap { max-width: 1400px; margin: 0 auto; display: grid; gap: 10px; }
 header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 h1 { font: 800 clamp(28px, 5vw, 44px)/1 var(--display); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
 h1 span { color: var(--accent); }
@@ -52,27 +52,31 @@ h1 span { color: var(--accent); }
 header form { flex: 1 1 380px; display: flex; gap: 8px; min-width: 0; }
 .field { flex: 1 1 auto; min-width: 0; }
 input[type="url"], input[type="number"] {
-  width: 100%; font: 15px var(--body); color: var(--fg);
-  background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px;
+  width: 100%; font: 14px var(--body); color: var(--fg);
+  background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px;
 }
 input:focus-visible, button:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 button {
-  font: 500 15px var(--body); border-radius: 6px; padding: 12px 18px; cursor: pointer;
+  font: 500 14px var(--body); border-radius: 6px; padding: 7px 12px; cursor: pointer;
   border: 1px solid var(--line); background: var(--surface); color: var(--fg);
 }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 .msg { font-size: 14px; color: var(--muted); margin: 0; }
 .msg.err { color: var(--accent); }
+.msg:empty { display: none; }
 
-details { font-size: 14px; color: var(--muted); justify-self: end; text-align: right; }
-details .row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; margin-top: 10px; text-align: left; }
+details { position: relative; font-size: 13px; color: var(--muted); }
+summary { cursor: pointer; padding: 7px 4px; white-space: nowrap; }
+details .row { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; display: flex; gap: 12px; align-items: flex-end;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); white-space: nowrap; }
 details label { display: grid; gap: 4px; }
-details input { width: 110px; padding: 8px 10px; }
+details input { width: 90px; padding: 6px 8px; }
+@media (max-width: 600px) { details .row { flex-wrap: wrap; white-space: normal; width: calc(100vw - 32px); } }
 .check { display: flex !important; align-items: center; gap: 8px; }
 
 .stage {
-  position: relative; width: 100%; max-width: 100%; aspect-ratio: 16 / 9;
+  position: relative; width: min(100%, calc((100vh - 90px) * 16 / 9)); justify-self: center; aspect-ratio: 16 / 9;
   background: var(--stage); border-radius: 8px; overflow: hidden;
 }
 .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
@@ -110,11 +114,8 @@ details input { width: 110px; padding: 8px 10px; }
 <body>
 <div class="wrap">
   <header>
-    <!-- <h1>Pecha<span>Kucha</span> Player</h1>
-    <div class="tag" id="format">20 slides × 20 sec · 6:40</div> -->
     <form id="form">
       <div class="field">
-        <!-- <label for="url" class="tag" style="display:block;margin-bottom:6px">Google Slides share link</label> -->
         <input id="url" type="url" required placeholder="https://docs.google.com/presentation/d/…/edit?usp=sharing" autocomplete="off" aria-label="Google Slides share link">
       </div>
       <button class="primary" type="submit" id="loadBtn">Load deck</button>
@@ -122,16 +123,16 @@ details input { width: 110px; padding: 8px 10px; }
     <button type="button" id="fs" disabled>Fullscreen</button>
     <button type="button" id="play" disabled>Start</button>
     <button type="button" id="restart" disabled>Restart</button>
+    <details>
+      <summary>Advanced</summary>
+      <div class="row">
+        <label for="delay">Seconds per slide<input id="delay" type="number" min="3" max="120" value="20"></label>
+        <label for="count">Slide count<input id="count" type="number" min="1" max="100" value="20"></label>
+        <label class="check" for="hud"><input id="hud" type="checkbox" checked> Show countdown overlay</label>
+      </div>
+    </details>
   </header>
-  <!-- <p class="msg" id="msg"></p> -->
-  <details>
-    <summary>Advanced</summary>
-    <div class="row">
-      <label for="delay">Seconds per slide<input id="delay" type="number" min="3" max="120" value="20"></label>
-      <label for="count">Slide count<input id="count" type="number" min="1" max="100" value="20"></label>
-      <label class="check" for="hud"><input id="hud" type="checkbox" checked> Show countdown overlay</label>
-    </div>
-  </details>
+  <p class="msg" id="msg"></p>
 
   <div class="stage" id="stage">
     <div class="empty" id="empty">
