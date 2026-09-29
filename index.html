@@ -65,8 +65,8 @@ button:disabled { opacity: 0.45; cursor: not-allowed; }
 .msg { font-size: 14px; color: var(--muted); margin: 0; }
 .msg.err { color: var(--accent); }
 
-details { font-size: 14px; color: var(--muted); }
-details .row { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; }
+details { font-size: 14px; color: var(--muted); justify-self: end; text-align: right; }
+details .row { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 16px; margin-top: 10px; text-align: left; }
 details label { display: grid; gap: 4px; }
 details input { width: 110px; padding: 8px 10px; }
 .check { display: flex !important; align-items: center; gap: 8px; }
@@ -119,11 +119,19 @@ details input { width: 110px; padding: 8px 10px; }
       </div>
       <button class="primary" type="submit" id="loadBtn">Load deck</button>
     </form>
+    <button type="button" id="fs" disabled>Fullscreen</button>
     <button type="button" id="play" disabled>Start</button>
     <button type="button" id="restart" disabled>Restart</button>
-    <button type="button" id="fs" disabled>Fullscreen</button>
   </header>
-  <p class="msg" id="msg"></p>
+  <!-- <p class="msg" id="msg"></p> -->
+  <details>
+    <summary>Advanced</summary>
+    <div class="row">
+      <label for="delay">Seconds per slide<input id="delay" type="number" min="3" max="120" value="20"></label>
+      <label for="count">Slide count<input id="count" type="number" min="1" max="100" value="20"></label>
+      <label class="check" for="hud"><input id="hud" type="checkbox" checked> Show countdown overlay</label>
+    </div>
+  </details>
 
   <div class="stage" id="stage">
     <div class="empty" id="empty">
@@ -136,14 +144,6 @@ details input { width: 110px; padding: 8px 10px; }
 
   <div class="timeline" id="timeline"></div>
 
-  <details>
-    <summary>Advanced</summary>
-    <div class="row">
-      <label for="delay">Seconds per slide<input id="delay" type="number" min="3" max="120" value="20"></label>
-      <label for="count">Slide count<input id="count" type="number" min="1" max="100" value="20"></label>
-      <label class="check" for="hud"><input id="hud" type="checkbox" checked> Show countdown overlay</label>
-    </div>
-  </details>
   <p class="hint">Deck sharing must be set to “Anyone with the link: Viewer”. Timer runs alongside the deck and starts when you press Start. It can drift a second or two from Google's slide change. Use Restart to resync both. Blank or asking to sign in? Set sharing to “Anyone with the link: Viewer”.</p>
 </div>
 
@@ -279,11 +279,12 @@ details input { width: 110px; padding: 8px 10px; }
     setFrame(srcFor(0, false));
   }
 
+  function say(text, cls) { const m = $("msg"); if (m) { m.textContent = text; m.className = cls; } else if (text) alert(text); }
+
   function load(raw) {
     const base = toBase(raw);
     if (!base) {
-      $("msg").textContent = "That isn't a Google Slides link. Copy it from Share > Copy link in Google Slides.";
-      $("msg").className = "msg err";
+      say("That isn't a Google Slides link. Copy it from Share > Copy link in Google Slides.", "msg err");
       return;
     }
     deckBase = base;
@@ -292,8 +293,7 @@ details input { width: 110px; padding: 8px 10px; }
     empty.hidden = true;
     hudBox.hidden = !$("hud").checked;
     ["restart", "fs", "play", "share"].forEach(id => { if ($(id)) $(id).disabled = false; });
-    $("msg").textContent = "";
-    $("msg").className = "msg";
+    say("", "msg");
     try {
       const { delay, count } = cfg();
       const p = new URL(location.href);
