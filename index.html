@@ -17,7 +17,8 @@
   --line: #dcd9d2;
   --accent: #e0442b;
   --accent-fg: #ffffff;
-  --seg: #e3e0d9;
+  --seg: #d3cfc6;
+  --ok: #2f7d4f;
   --stage: #111111;
   --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
   --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -27,13 +28,13 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #151412; --surface: #1f1d1a; --fg: #efece6; --muted: #a39e94;
-    --line: #34312c; --accent: #ff5a3c; --accent-fg: #160a07; --seg: #2e2b27; --stage: #000;
+    --line: #34312c; --accent: #ff5a3c; --accent-fg: #160a07; --seg: #45413b; --stage: #000; --ok: #6fcf97;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
   --bg: #151412; --surface: #1f1d1a; --fg: #efece6; --muted: #a39e94;
-  --line: #34312c; --accent: #ff5a3c; --accent-fg: #160a07; --seg: #2e2b27; --stage: #000;
+  --line: #34312c; --accent: #ff5a3c; --accent-fg: #160a07; --seg: #45413b; --stage: #000; --ok: #6fcf97;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -44,13 +45,17 @@ body {
   padding-inline: 16px; padding-block: 12px 32px;
 }
 .wrap { max-width: 1400px; margin: 0 auto; display: grid; gap: 10px; }
-header { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+header { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px; }
 h1 { font: 800 clamp(28px, 5vw, 44px)/1 var(--display); letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
 h1 span { color: var(--accent); }
 .tag { font: 500 12px/1 var(--mono); color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
 
-header form { flex: 1 1 380px; display: flex; gap: 8px; min-width: 0; }
-.field { flex: 1 1 auto; min-width: 0; }
+header form { flex: 1 1 380px; max-width: 640px; display: flex; align-items: flex-end; min-width: 0; margin-right: 6px; }
+.field { flex: 1 1 auto; min-width: 0; display: grid; gap: 3px; }
+.fieldhead { display: flex; gap: 8px; align-items: baseline; min-width: 0; font-size: 11px; line-height: 1.2; }
+.fieldhead label { color: var(--muted); font-weight: 500; letter-spacing: 0.02em; white-space: nowrap; }
+#url { border-radius: 6px 0 0 6px; }
+#loadBtn { border-radius: 0 6px 6px 0; margin-left: -1px; }
 input[type="url"], input[type="number"] {
   width: 100%; font: 14px var(--body); color: var(--fg);
   background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 7px 10px;
@@ -61,13 +66,19 @@ button {
   border: 1px solid var(--line); background: var(--surface); color: var(--fg);
 }
 button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-fg); }
-button:disabled { opacity: 0.45; cursor: not-allowed; }
-.msg { font-size: 14px; color: var(--muted); margin: 0; }
+button:disabled { background: transparent; color: var(--muted); border-color: var(--line); opacity: 0.5; cursor: not-allowed; }
+.msg { color: var(--muted); margin: 0; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.msg.ok { color: var(--ok); }
 .msg.err { color: var(--accent); }
 .msg:empty { display: none; }
 
 details { position: relative; font-size: 13px; color: var(--muted); }
-summary { cursor: pointer; padding: 7px 4px; white-space: nowrap; }
+details .row { color: var(--muted); }
+summary { list-style: none; cursor: pointer; white-space: nowrap; font: 500 14px var(--body); color: var(--muted);
+  padding: 7px 10px; border: 1px solid transparent; border-radius: 6px; }
+summary::-webkit-details-marker { display: none; }
+summary::after { content: "▾"; margin-left: 6px; font-size: 11px; }
+summary:hover, details[open] summary { color: var(--fg); border-color: var(--line); background: var(--surface); }
 details .row { position: absolute; right: 0; top: calc(100% + 6px); z-index: 10; display: flex; gap: 12px; align-items: flex-end;
   background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.18); white-space: nowrap; }
 details label { display: grid; gap: 4px; }
@@ -76,7 +87,7 @@ details input { width: 90px; padding: 6px 8px; }
 .check { display: flex !important; align-items: center; gap: 8px; }
 
 .stage {
-  position: relative; width: min(100%, calc((100vh - 90px) * 16 / 9)); justify-self: center; aspect-ratio: 16 / 9;
+  position: relative; width: min(100%, calc((100vh - 150px) * 16 / 9)); justify-self: center; aspect-ratio: 16 / 9;
   background: var(--stage); border-radius: 8px; overflow: hidden;
 }
 .stage iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
@@ -95,14 +106,17 @@ details input { width: 90px; padding: 6px 8px; }
 .stage:fullscreen { border-radius: 0; aspect-ratio: auto; }
 .stage:fullscreen .hud { top: 20px; right: 20px; font-size: 18px; }
 
-.timeline { display: grid; grid-template-columns: repeat(var(--n, 20), 1fr); gap: 3px; }
-.timeline div { height: 8px; background: var(--seg); border-radius: 2px; overflow: hidden; }
+.timeline { display: grid; grid-template-columns: repeat(var(--n, 20), 1fr); gap: 4px; align-items: center;
+  width: min(100%, calc((100vh - 150px) * 16 / 9)); justify-self: center; }
+.timeline div { height: 6px; background: var(--seg); border-radius: 3px; overflow: hidden; }
+.timeline div.cur { height: 10px; background: color-mix(in srgb, var(--accent) 30%, var(--seg)); }
 .timeline div i { display: block; height: 100%; width: 0; background: var(--accent); }
 .timeline div.done i { width: 100%; }
 
 .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .controls .spacer { flex: 1; }
-.hint { font-size: 13px; color: var(--muted); max-width: 70ch; margin: 0; }
+.hint { font-size: 12px; line-height: 1.5; color: var(--muted); margin: 2px 0 0; justify-self: center; width: min(100%, calc((100vh - 150px) * 16 / 9)); }
+.hint b { color: var(--fg); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 
 .hud { z-index: 3; }
@@ -116,9 +130,10 @@ details input { width: 90px; padding: 6px 8px; }
   <header>
     <form id="form">
       <div class="field">
-        <input id="url" type="url" required placeholder="https://docs.google.com/presentation/d/…/edit?usp=sharing" autocomplete="off" aria-label="Google Slides share link">
+        <div class="fieldhead"><label for="url">Google Slides URL</label><span class="msg" id="msg" role="status"></span></div>
+        <input id="url" type="url" required placeholder="https://docs.google.com/presentation/d/…/edit?usp=sharing" autocomplete="off">
       </div>
-      <button class="primary" type="submit" id="loadBtn">Load deck</button>
+      <button class="primary" type="submit" id="loadBtn">Load</button>
     </form>
     <button type="button" id="fs" disabled>Fullscreen</button>
     <button type="button" id="play" disabled>Start</button>
@@ -132,7 +147,6 @@ details input { width: 90px; padding: 6px 8px; }
       </div>
     </details>
   </header>
-  <p class="msg" id="msg"></p>
 
   <div class="stage" id="stage">
     <div class="empty" id="empty">
@@ -145,7 +159,8 @@ details input { width: 90px; padding: 6px 8px; }
 
   <div class="timeline" id="timeline"></div>
 
-  <p class="hint">Deck sharing must be set to “Anyone with the link: Viewer”. Timer runs alongside the deck and starts when you press Start. It can drift a second or two from Google's slide change. Use Restart to resync both. Blank or asking to sign in? Set sharing to “Anyone with the link: Viewer”.</p>
+  <p class="hint">Sharing: <b>Anyone with the link: Viewer</b><br>
+  The timer starts with Start. If it drifts from Google Slides, use Restart to resync.</p>
 </div>
 
 <script>
@@ -198,6 +213,7 @@ details input { width: 90px; padding: 6px 8px; }
     const segs = $("timeline").children;
     for (let i = 0; i < segs.length; i++) {
       segs[i].classList.toggle("done", i < idx);
+      segs[i].classList.toggle("cur", i === idx);
       segs[i].firstChild.style.width = i === idx ? `${frac * 100}%` : "";
     }
     $("slideNo").textContent = idx >= count ? "Done" : `${idx + 1} / ${count}`;
@@ -294,7 +310,7 @@ details input { width: 90px; padding: 6px 8px; }
     empty.hidden = true;
     hudBox.hidden = !$("hud").checked;
     ["restart", "fs", "play", "share"].forEach(id => { if ($(id)) $(id).disabled = false; });
-    say("", "msg");
+    say("✓ Deck loaded", "msg ok");
     try {
       const { delay, count } = cfg();
       const p = new URL(location.href);
